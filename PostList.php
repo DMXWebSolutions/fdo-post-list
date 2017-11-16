@@ -3,7 +3,7 @@
 /*
 Plugin Name: FDO Post List Widget
 Plugin URI: http://URI_Of_Page_Describing_Plugin_and_Updates
-Description: A widget a list of posts.
+Description: Widget to show a list of posts.
 Version: 0.1
 Author: Cleiton Pereira
 Author URI: http://URI_Of_The_Plugin_Author
@@ -14,20 +14,13 @@ class PostWidget extends WP_Widget
 {
     public function __construct()
     {
-        add_action('admin_enqueue_scripts', array($this, 'scripts'));
-
         parent::__construct(
-            'fdo-post-list-widget',
+            'fdo-custom-post-widget',
             'FDO Custom Post List',
             [
                 'description' => 'Liste posts de acordo com as opções disponíveis no widget'
             ]
         );
-    }
-
-    public function scripts()
-    {
-       
     }
 
     # Widget frontend
