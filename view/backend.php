@@ -6,12 +6,12 @@
 </p>
 
 <p>
-    <label for="tipo">
+    <label for="<?= $this->get_field_id('filter'); ?>">
         Exibir: 
     </label>
-    <select class="widefat" id="tipo" name="tipo">
-        <option value="relationed">Relacionados</option>
-        <option value="most-recent">Mais recentes</option>
+    <select class="widefat" id="<?= $this->get_field_id('filter'); ?>" name="<?= $this->get_field_name('filter'); ?>">
+        <option value="related" <?= ($postFilter == 'related') ? 'selected' : '' ?>>Relacionados</option>
+        <option value="most-recent" <?= ($postFilter == 'most-recent') ? 'selected' : '' ?>>Mais recentes</option>
     </select>
 </p>
 

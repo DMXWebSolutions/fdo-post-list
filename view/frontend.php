@@ -4,15 +4,11 @@
             <?= $instance['title'] ?>
         <?= $after_title ?>
     <?php endif; ?>
-
     <div class="fdo-post-list-widget">
         <ul>
-            <?php $i = 1?>
             <?php foreach($posts as $post): ?>
-                <li><a href="javascript:void()"><?=$i . ' - ' . $post->post_title ?></a></li>
-                <?php ++$i ?>
+                <li><a href="<?= get_permalink($post->ID); ?>"><?= $post->post_title ?></a></li>
             <?php endforeach; ?>
-            <li><a href="javascript:void()">Post 3</a></li>
         </ul>
     </div>
 <?= $after_widget ?>

@@ -1,9 +1,9 @@
 <?php
 
 /*
-Plugin Name: Custom Post Widget
+Plugin Name: FDO Post List Widget
 Plugin URI: http://URI_Of_Page_Describing_Plugin_and_Updates
-Description: A widget to show a single post.
+Description: A widget a list of posts.
 Version: 0.1
 Author: Cleiton Pereira
 Author URI: http://URI_Of_The_Plugin_Author
@@ -27,11 +27,7 @@ class PostWidget extends WP_Widget
 
     public function scripts()
     {
-       wp_enqueue_script( 'media-upload' );
-       wp_enqueue_media();
-       wp_enqueue_script('script', plugins_url('media_manager.js', __FILE__), array('jquery'));
-       wp_register_style('styless', plugins_url('styles.css', __FILE__));
-       wp_enqueue_style('styless' );
+       
     }
 
     # Widget frontend
@@ -39,8 +35,18 @@ class PostWidget extends WP_Widget
     {
         $currentPostID = (get_queried_object())->ID;
         $numberPosts = $instance['number-posts'];
-        
-        $posts = $this->getRelatedPosts($currentPostID, $numberPosts);
+
+        switch($instance['filter']) {
+            case 'related':
+                $posts = $this->getRelatedPosts($currentPostID, $numberPosts);
+                break;
+            case 'most-recent':
+                $posts = $this->getRecentPosts($numberPosts);
+                break;
+            default: 
+                $posts = $this->getRecentPosts($numberPosts); 
+                break;
+        }
 
         extract($args);
 
@@ -55,8 +61,9 @@ class PostWidget extends WP_Widget
     # Widget backend
     public function form($instance)
     {
-        $title = (isset($instance['title'])) ? $instance['title'] : '-';
+        $title = (isset($instance['title'])) ? $instance['title'] : '';
         $numberPosts = (isset($instance['number-posts'])) ? $instance['number-posts'] : 5;
+        $postFilter = (isset($instance['filter'])) ? $instance['filter'] : '';
             
         ob_start();
             include __DIR__ . '/view/backend.php';
@@ -72,6 +79,7 @@ class PostWidget extends WP_Widget
         $instance = $old_instance;
         $instance['title'] = (!empty($new_instance['title'])) ? strip_tags($new_instance['title']) : '';
         $instance['number-posts'] = (!empty($new_instance['number-posts'])) ? strip_tags($new_instance['number-posts']) : 5;
+        $instance['filter'] = (!empty($new_instance['filter'])) ? strip_tags($new_instance['filter']) : '';
         return $instance;
     }
 
@@ -85,8 +93,11 @@ class PostWidget extends WP_Widget
         foreach($categories as $category) {
             if($countPosts >= $numberPosts) break;
             $allPosts = get_posts([
-                'numberposts' => $numberPosts,
-                'category' => $category
+                'numberposts'      => $numberPosts,
+                'category'         => $category,
+                'orderby'          => 'date',
+                'post_type'        => 'post',
+                'post_status'      => 'publish',
             ]);
 
             foreach($allPosts as $post) {
@@ -96,6 +107,18 @@ class PostWidget extends WP_Widget
                 ++$countPosts;
             }
         }
+
+        return $posts;
+    }
+
+    private function getRecentPosts($numberPosts)
+    {
+        $posts = get_posts([
+            'numberposts'      => $numberPosts,
+            'orderby'          => 'date',
+            'post_type'        => 'post',
+            'post_status'      => 'publish',
+        ]);
 
         return $posts;
     }
